@@ -149,14 +149,18 @@
 \newCJKfontfamily[zhhei]\heiti{simhei.ttf}[AutoFakeBold=2.17]
 \fi
 \renewcommand{\headrulewidth}{2pt}
+
 \fancypagestyle{fancyfirst}{
  \fancyhead[C]{\zihao{-5}}
  \fancyfoot[L]{\hrule\@width2in\@height0.6pt \vskip \dimexpr\baselineskip-0.3mm
   \zihao{-5} 基金项目：\@grants\restorebmargin}
 }
+
 \fancyhead[L]{\hspace*{2.2mm}\zihao{-5}\thepage}
+\fancyhead[R]{}
 \fancyfoot[L,C,R]{}
 \pagestyle{fancy}
+
 \ctexset{autoindent=true}
 \AtBeginDocument{%
  \thispagestyle{fancyfirst}

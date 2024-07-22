@@ -1,0 +1,12 @@
+\section{相关工作}
+传统LLM推理框架采取了很多显存优化技术。 
+\par
+Hugging Face Accelerate\cite{Huggingface-Accelerate}实现了张量交换技术，但换出与换入的张量仅限于LLM的参数张量；DeepSpeed ZeRO-Inference\cite{GPT-175B资源消耗}实现了LLM的分布式推理，能够利用数据并行性与张量并行性来实现LLM推理加速。但以上两个框架均无法针对KV Cache实现交换技术，也没有实现压缩或重算技术。 
+\par
+FlexGen\cite{Swapping}首次提出了“自适应张量优化”的概念，并将张量交换的范围由参数张量扩展至所有张量。通过线性规划建模在交换方案的可行域内进行搜索，在给定的时间内找到较优解。同时，FlexGen还实现了张量压缩技术，相比于Hugging Face Accelerate和DeepSpeed ZeRO-Inference，实现了较大的吞吐率提升。然而，FlexGen假设同一批中的所有用户请求拥有相同的输出长度。在实际情况中，输出长度具有很大的差异性，使得相关理论无法推广。
+\par
+为了解决上述问题，ORCA\cite{ORCA}将批处理调度的粒度从单个用户请求转化为单次推理迭代，化解了同一批中用户请求相互等待的性能瓶颈。 
+\par
+vLLM\cite{vLLM}在ORCA的基础上实现了张量重算技术。基于OS页式内存管理思想，引入Paged Attention机制来实现。vLLM相比于OCRA，大幅度提升了显存利用率，并增加批处理大小上限，进而提升了推理任务的整体吞吐率。同时，vLLM设计了规范且友好的用户接口，开发者能够根据任务需求来定义各种参数，极大地方便了有关推理优化的深入研究。 
+\par
+另外，其它推理加速技术也被广泛提出和应用。SpecInfer\cite{SpecInfer}引入了投机推理技术（Speculative Sampling），根据小型LLM的输出来预测大型LLM的输出，在大幅度提升推理吞吐率的同时保障了输出质量。DistillSpec\cite{DistillSpec}在SpecInfer的基础上实现了知识蒸馏技术（Knowledge Distillation，KD），使得输出预测准确率显著提升。
