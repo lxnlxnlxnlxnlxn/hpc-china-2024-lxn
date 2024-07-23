@@ -1,14 +1,16 @@
 \section{实验验证}
+
 本章介绍实验部分。第一节为实验平台的软硬件配置；第二节介绍LLM与数据集的选取，以及实验组设置；第三节分析单步迭代执行时间预测误差；第四节针对基于开销感知的张量优化策略，进行吞吐率优化测试；第五节针对基于公平性的用户请求调度策略，进行实时性测试；第六节进行其它测试工作。
 
 \subsection{实验环境}
+
 本文开展实验使用的服务器软硬件配置如表\ref{Table:实验平台的软硬件配置}。
 
 \begin{table}[H]
   \centering
   \caption{实验平台的软硬件配置}
   \label{Table:实验平台的软硬件配置}
-  \renewcommand{\arraystretch}{1.2}
+  \renewcommand{\arraystretch}{1.25}
   \small
   \begin{tabular}{c c}
     \toprule
@@ -25,15 +27,15 @@
   \end{tabular}
 \end{table}
 
-使用Intel(R) Xeon(R) CPU和NVIDIA A800 80GB GPU，CUDA版本为11.8。使用pytorch-2.0.l、ray-2.7.1以及vllm-0.2.5作为底层框架进行开发。 
-\par
+使用Intel(R) Xeon(R) CPU和NVIDIA A800 80GB GPU，CUDA版本为11.8。使用pytorch-2.0.l、ray-2.7.1以及vllm-0.2.5作为底层框架进行开发。 \par
+
 服务器使用PCIe连接实现GPU-CPU通信。PCIe传输带宽在传输数据量不同时差异显著，表\ref{Table:PCIe双向传输带宽}列出了部分情况。在计算张量交换开销时，需要根据单次实际传输的数据量（一般是一个Block或其中的一部分）找到对应的传输带宽值。
 
 \begin{table}[H]
   \centering
   \caption{PCIe双向传输带宽}
   \label{Table:PCIe双向传输带宽}
-  \renewcommand{\arraystretch}{1.2}
+  \renewcommand{\arraystretch}{1.25}
   \small
   \begin{tabular}{c c c}
     \toprule
@@ -53,13 +55,14 @@
 \end{table}
 
 \subsection{实验设置}
-本文选用OPT-13B、OPT-30B、Llama-13B和Llama-32.5B作为实验模型，在三个常见数据集上进行测试，如表\ref{Table:实验数据集选取}所示。三个数据集中样本序列长度的分布曲线如图\ref{Fig:序列长度分布曲线}所示。chatbot和alpaca中大多数序列的长度较短，而summary中序列长度展现出很大的差异性，且包含较长的序列。它们涵盖了LLM应用程序面临的绝大部分场景。
+
+本文选用OPT-13B、OPT-30B、Llama-13B和Llama-32.5B作为实验模型，在三个常见数据集上进行测试，如表\ref{Table:实验数据集选取}所示。
 
 \begin{table}[H]
   \centering
   \caption{实验数据集选取}
   \label{Table:实验数据集选取}
-  \renewcommand{\arraystretch}{1.2}
+  \renewcommand{\arraystretch}{1.25}
   \small
   \begin{tabular}{c c c c}
     \toprule
@@ -72,6 +75,8 @@
   \end{tabular}
 \end{table}
 
+三个数据集的样本序列长度分布曲线如图\ref{Fig:序列长度分布曲线}所示。chatbot和alpaca中大多数序列长度较短，而summary中序列长度展现出很大差异性，且包含长序列。它们涵盖了LLM应用程序面临的绝大部分场景。
+
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=0.9\linewidth]
@@ -80,33 +85,17 @@
   \label{Fig:序列长度分布曲线}
 \end{figure}
 
-实验过程参数设置如表\ref{Table:实验参数设置}所示。为了模拟LLM应用程序在多任务并发场景下的运行状态，本文将GPU Block数量设置在较低水平，以保证推理任务执行过程中会发生抢占现象；将CPU Block数量同样设置在较低水平，以保证张量重算技术能够在CPU内存不足时被调用。针对12个实验组，在相应数据集中使用简单随机抽样法选取若干样本进行后续测试。
-
-\begin{table}[H]
-  \centering
-  \caption{实验参数设置}
-  \label{Table:实验参数设置}
-  \renewcommand{\arraystretch}{1.17}
-  \small
-  \begin{tabular}{c c}
-    \toprule
-    \textbf{推理任务相关参数} & \textbf{实验设置} \\
-    \midrule
-    GPU Block数量 & 128 \\ 
-    CPU Block数量 & 64 \\ 
-    测试样例数量 & 1000 \\ 
-    \bottomrule
-  \end{tabular}
-\end{table}
+实验过程中的参数设置模拟LLM应用程序在多任务并发场景下的运行状态。本文将GPU Block数量设置为128，以保证推理任务执行过程中会发生抢占现象；将CPU Block数量设置为64，以保证张量重算技术能够在CPU内存不足时被调用。针对12个实验组，在相应数据集中使用简单随机抽样法选取1000个样本进行后续测试。
 
 \subsection{执行时间预测}
+
 表\ref{Table:OPT模型单步迭代执行时间预测误差}和表\ref{Table:LLama模型单步迭代执行时间预测误差}分别展示了OPT模型和Llama模型单步推理执行时间的预测效果。OPT执行时间预测任务共有6.4w条训练数据和1.6w条测试数据，结果表明，随机森林回归模型性能最佳，其在拟合2次多项式时能够达到1.76\%的预测误差。Llama执行时间预测任务共有6.8条训练数据和1.7w条测试数据，结果表明，随机森林模型同样性能最佳，其在拟合2次多项式时能够达到1.30\%的预测误差。
 
 \begin{table}[H]
   \centering
   \caption{OPT模型单步迭代执行时间预测误差}
   \label{Table:OPT模型单步迭代执行时间预测误差}
-  \renewcommand{\arraystretch}{1.17}
+  \renewcommand{\arraystretch}{1.25}
   \small
   \begin{tabular}{c c c c c c}
     \toprule
@@ -129,7 +118,7 @@
   \centering
   \caption{LLama模型单步迭代执行时间预测误差}
   \label{Table:LLama模型单步迭代执行时间预测误差}
-  \renewcommand{\arraystretch}{1.17}
+  \renewcommand{\arraystretch}{1.25}
   \small
   \begin{tabular}{c c c c c c}
     \toprule
@@ -149,10 +138,11 @@
 \end{table}
 
 \subsection{重算与交换的开销对比}
-本文对OPT-13B、OPT-30B、Llama-13B和Llama-32.5B进行开销对比测试，其结果如图\ref{Fig:交换与重算开销对比}所示。当序列长度较小时，交换开销小于重算开销；随着序列长度的增加，二者大小关系反转。原因如下： 
-\par
-自注意力机制内核采用并行计算策略，每个线程只计算一个token的qkv张量及注意力值。随着token数量增多，并行执行的线程数量增加，线程间同步开销随之上升，而单线程计算量不变。因此张量重算开销随序列长度增加呈亚线性增长。而由公式\ref{Eq:Swap Overhead}、\ref{Eq:Block Mem}、\ref{Eq:KV Cache Mem}可知，张量交换开销与序列长度成近似正比关系。由此可知，张量重算开销的增长速度小于张量交换开销。 
-\par
+
+本文对OPT-13B、OPT-30B、Llama-13B和Llama-32.5B进行开销对比测试，其结果如图\ref{Fig:交换与重算开销对比}所示。当序列长度较小时，交换开销小于重算开销；随着序列长度的增加，二者大小关系反转。原因如下：  \par
+
+自注意力机制内核采用并行计算策略，每个线程只计算一个token的qkv张量及注意力值。随着token数量增多，并行执行的线程数量增加，线程间同步开销随之上升，而单线程计算量不变。因此张量重算开销随序列长度增加呈亚线性增长。而由公式\ref{Eq:Swap Overhead}、\ref{Eq:Block Mem}、\ref{Eq:KV Cache Mem}可知，张量交换开销与序列长度呈近似正比关系。因此，张量重算开销的增长速度小于张量交换开销。  \par
+
 在贪心采样策略下，对于长序列（如Summary数据集中的部分样本），无论是vLLM还是AdaptiveLLM，都偏向于使用重算，两种策略带来的抢占行为没有差异。对于短序列（如Chatbot和Alpaca数据集），vLLM使用重算，而AdaptiveLLM使用开销较小的交换，此时能够带来吞吐率提升。在LLM实际应用场景中，大多数序列的长度较短，使得张量交换在提升性能上拥有明显优势。而当长序列较多，或者CPU内存空间不足时，张量重算技术能够发挥优势。 
 
 \begin{figure}[!htbp]
@@ -164,15 +154,16 @@
 \end{figure}
 
 \subsection{吞吐率测试}
-本文以vLLM和FlexGen作为基准框架，针对AdaptiveLLM进行吞吐率测试。同时，对vLLM框架稍加修改形成vLLM'，使得内存管理器在GPU内存不足时固定调用张量交换技术。
-\par
-图\ref{Fig:推理任务吞吐率}展示了12个实验组在推理任务中的整体吞吐率与序列最大输出长度的关系。表\ref{Table:AdaptiveLLM相对于vLLM的加速比}给出了最大输出长度为64时，AdaptiveLLM相对于vLLM的加速比。结果表明，以vLLM为基准框架时，基于开销感知的张量优化策略实现1.1到1.4的整体吞吐加速比。
-\par
+
+本文以vLLM作为基准框架，针对AdaptiveLLM进行吞吐率测试。同时，对vLLM框架稍加修改形成vLLM$\_$s，使得内存管理器在GPU内存不足时固定调用张量交换技术。 \par
+
+图\ref{Fig:推理任务吞吐率}展示了12个实验组在推理任务中的整体吞吐率与序列最大输出长度的关系。表\ref{Table:AdaptiveLLM相对于vLLM的加速比}给出了最大输出长度为64时，AdaptiveLLM相对于vLLM的加速比。结果表明，以vLLM为基准框架时，基于开销感知的张量优化策略实现1.1到1.4的整体吞吐加速比。 \par
+
 由于Summary数据集的平均序列长度和方差均明显高于Alpaca和Chatbot数据集，因此在相同条件下，其推理吞吐率低于Alpaca和Chatbot。同理，Alpaca在相同条件下的推理吞吐率应略低于Chatbot。
 
 \begin{figure*}[!htbp]
   \centering
-  \includegraphics[width=0.9\linewidth]
+  \includegraphics[width=0.85\linewidth]
   {推理任务吞吐率.png}
   \caption{推理任务吞吐率}
   \label{Fig:推理任务吞吐率}
@@ -182,7 +173,7 @@
   \centering
   \caption{AdaptiveLLM相对于vLLM的加速比}
   \label{Table:AdaptiveLLM相对于vLLM的加速比}
-  \renewcommand{\arraystretch}{1.17}
+  \renewcommand{\arraystretch}{1.25}
   \small
   \begin{tabular}{c c c c}
     \toprule
@@ -196,17 +187,17 @@
   \end{tabular}
 \end{table}
 
-表\ref{Table:用户请求抢占行为记录}给出了序列最大输出长度为64时，不同框架推理过程中的抢占行为（不包含FlexGen）。
+表\ref{Table:用户请求抢占行为记录}给出了序列最大输出长度为64时，不同框架推理过程中的抢占行为。
 
 \begin{table}[H]
   \centering
   \caption{用户请求抢占行为记录}
   \label{Table:用户请求抢占行为记录}
-  \renewcommand{\arraystretch}{1.17}
+  \renewcommand{\arraystretch}{1.25}
   \small
   \begin{tabular}{c c c c c}
     \toprule
-    \textbf{实验组} & \multicolumn{2}{c}{\textbf{AdaptiveLLM}} & \textbf{vLLM} & \textbf{vLLM'} \\
+    \textbf{实验组} & \multicolumn{2}{c}{\textbf{AdaptiveLLM}} & \textbf{vLLM} & \textbf{vLLM$\_$s} \\
     \midrule
     \textbf{抢占行为（千次）} & \textbf{重算} & \textbf{交换} & \textbf{重算} & \textbf{交换} \\
     \midrule
@@ -225,24 +216,16 @@
   \end{tabular}
 \end{table}
 
-在GPU内存不足时，vLLM调用张量重算技术；FlexGen和vLLM'调用张量交换技术；而AdaptiveLLM能够从二者中选择开销较小的抢占方式。由于FlexGen框架设计时假设用户输入序列的长度为定值，因此本文测试FlexGen时遵循以下原则：
+在GPU内存不足时，vLLM调用张量重算技术；vLLM$\_$s调用张量交换技术；而AdaptiveLLM能够从二者中选择开销较小的抢占方式。CPU内存的限制使vLLM$\_$s的批处理大小低于vLLM和AdaptiveLLM，因此吞吐率也较低。当用户请求序列的最大输出长度限制在较低水平时，每个请求执行推理任务所需的迭代次数较少，资源需求量低，抢占鲜有发生，此时AdaptiveLLM和vLLM的性能差距不大。随着最大输出长度的增加，有限的GPU内存无法满足需求，AdaptiveLLM调用基于开销感知的张量优化策略，展现性能优势；当最大输出长度过大时，无论是AdaptiveLLM还是vLLM，其批处理大小均限制在较低水平，但AdaptiveLLM仍具有明显优势（当批处理大小为256时，AdaptiveLLM在vLLM的基础上实现了1.1到1.3的整体加速比）。 \par
 
-\begin{itemize}
-  \item 由于FlexGen仅提供OPT系列模型的调用接口，因此本文只测试OPT-13B和OPT-30B。
-  \item FlexGen的测试样本数量为1000，与AdaptiveLLM、vLLM、vLLM’保持一致。
-  \item 由随机数生成器构造样本序列，设置其长度等于相应数据集中序列长度的平均值。
-  \item 用来保存KV Cache的CPU和GPU空间分别设置为对应场景下64个和128个Block所占用的内存，而对用来保存参数张量的空间不设限。
-  \item 适当降低批处理大小，以保证FlexGen能够通过张量交换技术完成推理。
-\end{itemize}
+由表\ref{Table:用户请求抢占行为记录}可知，在Chatbot和Alpaca数据集的推理任务中，序列长度较短，批处理大小高，换出频繁，导致CPU内存不足，因此AdaptiveLLM执行了少量张量重算操作；在Summary数据集的推理任务中，其序列长度较大，批处理大小低，换入换出较少，极少出现CPU内存不足的现象，此时张量重算操作的执行大部分来源于开销比较的结果。 \par
 
-由图\ref{Fig:推理任务吞吐率}可知，FlexGen的整体吞吐率明显低于vLLM、vLLM’和AdaptiveLLM。通过进一步分析可知，CPU内存的限制使vLLM’的批处理大小低于vLLM和AdaptiveLLM，因此吞吐率也较低。当用户请求序列的最大输出长度限制在较低水平时，每个请求执行推理任务所需的迭代次数较少，资源需求量低，抢占鲜有发生，此时AdaptiveLLM和vLLM的性能差距不大。随着最大输出长度的增加，有限的GPU内存无法满足需求，AdaptiveLLM调用基于开销感知的张量优化策略，展现性能优势；当最大输出长度过大时，无论是AdaptiveLLM还是vLLM，其批处理大小均限制在较低水平，但AdaptiveLLM仍具有明显优势（当批处理大小为256时，AdaptiveLLM在vLLM的基础上实现了1.1到1.3的整体加速比）。
-\par
-由表\ref{Table:用户请求抢占行为记录}可知，在Chatbot和Alpaca数据集的推理任务中，序列长度较短，批处理大小高，换出频繁，导致CPU内存不足，因此AdaptiveLLM执行了少量张量重算操作；在Summary数据集的推理任务中，其序列长度较大，批处理大小低，换入换出较少，极少出现CPU内存不足的现象，此时张量重算操作的执行大部分来源于开销比较的结果。 
-\par
 另外，短序列被抢占时，张量交换相比于张量重算有开销优势。而OPT-13B和Llama-13B相比于OPT-30B和Llama-32.5B，这种优势更加明显，如图\ref{Fig:交换与重算开销对比}所示。因此在OPT-13B和Llama-13B上，AdaptiveLLM产生的加速比（以vLLM作为对照）更高。
 
 \subsection{实时性测试}
+
 为了消除整体吞吐率变化对实时性测试的影响，本文选取平均带权周转时间作为测试指标。用户请求带权周转时间等于客户端响应时间除以服务器端处理时间，如公式\ref{Eq:Weighted Around Time}所示。该指标越低，说明用户请求的排队时间越短。 \par
+
 \begin{equation}
   \begin{aligned}
     w\_around\_t = \frac{finish\_t - send\_t}{finish\_t - sche\_t}
@@ -252,26 +235,28 @@
   \setlength{\belowdisplayskip}{2ex}
 \end{equation}
 
-图\ref{Fig:用户请求平均带权周转时间}展示了本实验的测试结果。由图可知，在不同的批处理大小设置下，基于公平性的用户请求调度策略均能使平均带权周转时间显著下降。当批处理大小较大时（64或128），AdaptiveLLM的平均带权周转时间为vLLM的60\%至80\%。
+图\ref{Fig:用户请求平均带权周转时间}展示了平均带权周转时间随批处理大小上限的变化情况。在不同批处理大小设置下，基于公平性的用户请求调度策略均能使平均带权周转时间显著下降。当批处理大小较大时（64或128），AdaptiveLLM的平均带权周转时间为vLLM的60\%至80\%。
 
 \begin{figure*}[!htbp]
   \centering
-  \includegraphics[width=0.9\linewidth]
+  \includegraphics[width=0.85\linewidth]
   {用户请求平均带权周转时间.png}
   \caption{用户请求平均带权周转时间}
   \label{Fig:用户请求平均带权周转时间}
 \end{figure*}
 
-对于序列较短的Chatbot和Alpaca数据集而言，随着批处理大小的上升，GPU利用更加充分，因此平均带权周转时间下降。当批处理大小到达64时，GPU产生内存瓶颈，此时平均带权周转时间不再随最大批处理大小的上升而下降。
-\par
-对于序列较长的Summary数据集而言，其处理并发度被限制在较低水平（10以下），无法达到用户设置的批处理大小上限。因此平均带权周转时间呈稳定状态。AdaptiveLLM中高效的调度策略展现优势，使用户请求等待时间显著低于vLLM和vLLM’。
-\par
+对于序列较短的Chatbot和Alpaca数据集而言，随着批处理大小的上升，GPU利用更加充分，因此平均带权周转时间下降。当批处理大小到达64时，GPU产生内存瓶颈，此时平均带权周转时间不再随最大批处理大小的上升而下降。 \par
+
+对于序列较长的Summary数据集而言，其处理并发度被限制在较低水平（10以下），无法达到用户设置的批处理大小上限。因此平均带权周转时间呈稳定状态。AdaptiveLLM中高效的调度策略展现优势，使用户请求等待时间显著低于vLLM和vLLM\_s。\par
+
 综上所述，基于公平性的用户请求调度策略使得用户请求从客户端发送至服务器端后能够很快开始处理，不会出现长时间等待现象。
 
 \subsection{其它测试}
+
 \subsubsection{误差分析}
-张量重算（单次prefill阶段执行）开销的预测误差等于单步推理执行时间预测器的误差，根据本章第三节的分析可知，其预测误差低于2\%。
-\par
+
+张量重算（单次prefill阶段执行）开销的预测误差等于单步推理执行时间预测器的误差，根据本章第三节的分析可知，其预测误差低于2\%。 \par
+
 本文针对模型Llama-13B和Llama-32.5B进行交换误差测试，其结果如图\ref{Fig:交换开销预测误差}所示。两个模型换入开销预测MAPE误差分别为1.5\%和1.1\%；换出开销预测MAPE误差分别为1.0\%和1.2\%。因此，张量交换开销总预测误差低于4\%。
 
 \begin{figure}[!htbp]
@@ -283,6 +268,7 @@
 \end{figure}
 
 \subsubsection{开销分析}
-基于开销感知的张量优化策略在获取重算和交换开销时，会带来新的预测开销。本文设计如下对照实验获取张量感知过程的开销： 
-\par
+
+基于开销感知的张量优化策略在获取重算和交换开销时，会带来新的预测开销。本文设计如下对照实验获取张量感知过程的开销：  \par
+
 在吞吐率测试过程中，当GPU内存不足时调用开销比较过程，但最终使用vLLM提供的固定式张量抢占策略（重算）。观察此情景下推理任务的总用时可知，张量感知过程的开销在整个推理任务中仅占0.1\%至1\%。

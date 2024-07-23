@@ -1,6 +1,6 @@
 %! TeX program=latexmk
 %! TeX options=-xelatex -synctex=1 -interaction=nonstopmode -file-line-error "%DOC%"
-\documentclass[a4paper, nosysfonts]{hpcchina}
+\documentclass[a4paper]{hpcchina}
 
 \usepackage{graphicx}
 \usepackage{amsmath,amsthm}
@@ -19,6 +19,9 @@
 \renewcommand{\algorithmicensure}{\textbf{Output:}}  % 伪代码输出
 \usepackage{setspace}  % 伪代码行距
 \usepackage{booktabs}
+\usepackage[UTF8]{ctex}
+
+\tracinglostchars=2
 
 %标题
 \title{AdaptiveLLM:基于张量交换和张量重算的大模型推理优化技术}
@@ -72,13 +75,14 @@
 \daterevise{2024-08-31}
 
 \begin{document}
-\maketitle
-\input{1.introduction.tex}
-\input{2.background}
-\input{3.design}
-\input{4.evaluation}
-\input{5.related-work}
-\input{6.future-work}
-\input{7.conclusion}
-\bibliography{latex-cn-en/reference.bib}
+  \maketitle
+  \input{1.introduction.tex}
+  \input{2.background}
+  \input{3.design}
+  \input{4.evaluation}
+  \input{5.related-work}
+  \input{6.future-work}
+  \input{7.conclusion}
+  \bibliographystyle{gbt7714-numerical}
+  \bibliography{references}
 \end{document}
