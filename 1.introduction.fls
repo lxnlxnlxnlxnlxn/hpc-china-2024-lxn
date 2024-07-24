@@ -1,0 +1,6 @@
+PWD E:/其他/论文修改/hpc-china-202407
+INPUT d:/texlive/2024/texmf.cnf
+INPUT d:/texlive/2024/texmf-dist/web2c/texmf.cnf
+INPUT d:/texlive/2024/texmf-var/web2c/xetex/xelatex.fmt
+INPUT 1.introduction.tex
+OUTPUT 1.introduction.log
