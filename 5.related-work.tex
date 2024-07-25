@@ -1,8 +1,9 @@
 \section{相关工作}
 
+%wsq 参考学术paper的相关工作格式，将相关工作分为几类介绍。
 传统LLM推理框架采取了很多显存优化技术。 \par
 
-Hugging Face Accelerate\cite{Huggingface-Accelerate}实现了张量交换技术，但换出与换入的张量仅限于LLM的参数张量；DeepSpeed ZeRO-Inference\cite{GPT-175B资源消耗}实现了LLM的分布式推理，能够利用数据并行性与张量并行性来实现LLM推理加速。但以上两个框架均无法针对KV Cache实现交换技术，也没有实现压缩或重算技术。 \par
+Hugging Face Accelerate\cite{Huggingface-Accelerate}实现了张量交换技术，但换出与换入的张量仅限于LLM的参数张量；DeepSpeed ZeRO-Inference\cite{GPT-175B资源消耗}实现了LLM的分布式推理，能够利用数据并行性与张量并行性来实现LLM推理加速。但以上两个框架均无法针对KV Cache实现交换技术，也没有实现重算技术。 \par
 
 FlexGen\cite{Swapping}首次提出了“自适应张量优化”的概念，并将张量交换的范围由参数张量扩展至所有张量。通过线性规划建模在交换方案的可行域内进行搜索，在给定的时间内找到较优解。同时，FlexGen还实现了张量压缩技术，相比于Hugging Face Accelerate和DeepSpeed ZeRO-Inference，实现了较大的吞吐率提升。然而，FlexGen假设同一批中的所有用户请求拥有相同的输出长度。在实际情况中，输出长度具有很大的差异性，使得相关理论无法推广。\par
 
