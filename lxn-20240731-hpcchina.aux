@@ -31,7 +31,6 @@
 \citation{vLLM}
 \citation{Swapping,vLLM,LightLLM}
 \citation{Recomputation}
-\citation{Swapping}
 \@writefile{toc}{\contentsline {section}{\numberline {2.}背景知识}{3}{section.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1.}KV Cache的提出}{3}{subsection.2.1}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces KV Cache的功能示意图}}{3}{figure.caption.1}\protected@file@percent }
@@ -40,65 +39,79 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2.}KV Cache的内存优化}{3}{subsection.2.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {(1)}内存碎片优化}{3}{subsubsection.2.2.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {(2)}张量交换与张量重算}{3}{subsubsection.2.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.}针对KV Cache的张量优化技术}{3}{subsection.2.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {(1)}张量交换}{4}{subsubsection.2.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {(2)}张量重算}{4}{subsubsection.2.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.}优化设计}{4}{section.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1.}整体架构}{4}{subsection.3.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces 整体设计架构}}{4}{figure.caption.2}\protected@file@percent }
-\newlabel{Fig:整体设计架构}{{2}{4}{整体设计架构}{figure.caption.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.}张量重算分析器}{4}{subsection.3.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces 张量重算时间线流程}}{4}{figure.caption.3}\protected@file@percent }
-\newlabel{Fig:张量重算示意图}{{3}{4}{张量重算时间线流程}{figure.caption.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {(1)}算子粒度开销分析}{4}{subsubsection.3.2.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces 四种算子的计算流程}}{5}{figure.caption.4}\protected@file@percent }
-\newlabel{Fig:四种算子的计算流程}{{4}{5}{四种算子的计算流程}{figure.caption.4}{}}
-\newlabel{Eq:Attention}{{1}{5}{算子粒度开销分析}{equation.3.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {(2)}单步推理开销预测模型}{5}{subsubsection.3.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.}张量交换分析器}{5}{subsection.3.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces 张量交换时间线流程}}{5}{figure.caption.5}\protected@file@percent }
-\newlabel{Fig:张量交换示意图}{{5}{5}{张量交换时间线流程}{figure.caption.5}{}}
-\newlabel{Eq:Swap Overhead}{{2}{5}{张量交换分析器}{equation.3.2}{}}
-\newlabel{Eq:Block Mem}{{3}{5}{张量交换分析器}{equation.3.3}{}}
-\newlabel{Eq:KV Cache Mem}{{4}{5}{张量交换分析器}{equation.3.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.}内存优化决策器}{6}{subsection.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.}研究意义}{3}{section.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces 交换与重算开销对比}}{4}{figure.caption.2}\protected@file@percent }
+\newlabel{Fig:交换与重算开销对比}{{2}{4}{交换与重算开销对比}{figure.caption.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.}优化设计}{4}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.}整体架构}{4}{subsection.4.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces 整体设计架构}}{4}{figure.caption.3}\protected@file@percent }
+\newlabel{Fig:整体设计架构}{{3}{4}{整体设计架构}{figure.caption.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.}张量重算分析器}{4}{subsection.4.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces 张量重算时间线流程}}{5}{figure.caption.4}\protected@file@percent }
+\newlabel{Fig:张量重算示意图}{{4}{5}{张量重算时间线流程}{figure.caption.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(1)}算子粒度开销分析}{5}{subsubsection.4.2.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces 四种算子的计算流程}}{5}{figure.caption.5}\protected@file@percent }
+\newlabel{Fig:四种算子的计算流程}{{5}{5}{四种算子的计算流程}{figure.caption.5}{}}
+\newlabel{Eq:Attention}{{1}{5}{算子粒度开销分析}{equation.4.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(2)}单步推理开销预测模型}{5}{subsubsection.4.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.}张量交换分析器}{5}{subsection.4.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces 张量交换时间线流程}}{5}{figure.caption.6}\protected@file@percent }
+\newlabel{Fig:张量交换示意图}{{6}{5}{张量交换时间线流程}{figure.caption.6}{}}
+\newlabel{Eq:Swap Overhead}{{2}{5}{张量交换分析器}{equation.4.2}{}}
+\newlabel{Eq:Block Mem}{{3}{6}{张量交换分析器}{equation.4.3}{}}
+\newlabel{Eq:KV Cache Mem}{{4}{6}{张量交换分析器}{equation.4.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.}内存优化决策器}{6}{subsection.4.4}\protected@file@percent }
 \@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Mem\_Schedule}}{6}{algorithm.1}\protected@file@percent }
 \newlabel{Code:内存优化决策器工作流程}{{1}{6}{Mem\_Schedule}{algorithm.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.}用户请求调度器}{6}{subsection.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.}用户请求调度器}{6}{subsection.4.5}\protected@file@percent }
+\citation{OPT}
+\citation{Llama}
+\citation{Chatbot}
+\citation{Alpaca}
+\citation{Summary}
 \@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces Req\_Schedule}}{7}{algorithm.2}\protected@file@percent }
 \newlabel{Code:用户请求调度器工作流程}{{2}{7}{Req\_Schedule}{algorithm.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.}实验验证}{7}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.}实验环境}{7}{subsection.4.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces 实验平台的软硬件配置}}{7}{table.caption.6}\protected@file@percent }
-\newlabel{Table:实验平台的软硬件配置}{{1}{7}{实验平台的软硬件配置}{table.caption.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.}实验设置}{7}{subsection.4.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces 实验数据集选取}}{7}{table.caption.7}\protected@file@percent }
-\newlabel{Table:实验数据集选取}{{2}{7}{实验数据集选取}{table.caption.7}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces 序列长度分布曲线}}{7}{figure.caption.8}\protected@file@percent }
-\newlabel{Fig:序列长度分布曲线}{{6}{7}{序列长度分布曲线}{figure.caption.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.}执行时间预测}{8}{subsection.4.3}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces OPT模型单步迭代执行时间预测误差}}{8}{table.caption.9}\protected@file@percent }
-\newlabel{Table:OPT模型单步迭代执行时间预测误差}{{3}{8}{OPT模型单步迭代执行时间预测误差}{table.caption.9}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces LLama模型单步迭代执行时间预测误差}}{8}{table.caption.10}\protected@file@percent }
-\newlabel{Table:LLama模型单步迭代执行时间预测误差}{{4}{8}{LLama模型单步迭代执行时间预测误差}{table.caption.10}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.}吞吐率测试}{8}{subsection.4.4}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces AdaptiveLLM相对于vLLM的加速比}}{8}{table.caption.11}\protected@file@percent }
-\newlabel{Table:AdaptiveLLM相对于vLLM的加速比}{{5}{8}{AdaptiveLLM相对于vLLM的加速比}{table.caption.11}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces 用户请求抢占行为记录}}{8}{table.caption.12}\protected@file@percent }
-\newlabel{Table:用户请求抢占行为记录}{{6}{8}{用户请求抢占行为记录}{table.caption.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.}实验验证}{7}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.}实验环境}{7}{subsection.5.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces 实验平台的软硬件配置}}{7}{table.caption.7}\protected@file@percent }
+\newlabel{Table:实验平台的软硬件配置}{{1}{7}{实验平台的软硬件配置}{table.caption.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.}实验设置}{7}{subsection.5.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces 实验数据集选取}}{7}{table.caption.8}\protected@file@percent }
+\newlabel{Table:实验数据集选取}{{2}{7}{实验数据集选取}{table.caption.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces 推理任务吞吐率}}{8}{figure.caption.9}\protected@file@percent }
+\newlabel{Fig:推理任务吞吐率}{{7}{8}{推理任务吞吐率}{figure.caption.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces 序列长度分布曲线}}{8}{figure.caption.10}\protected@file@percent }
+\newlabel{Fig:序列长度分布曲线}{{8}{8}{序列长度分布曲线}{figure.caption.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.}吞吐率测试}{8}{subsection.5.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces AdaptiveLLM相对于基准框架的加速比}}{8}{table.caption.11}\protected@file@percent }
+\newlabel{Table:AdaptiveLLM相对于基准框架的加速比}{{3}{8}{AdaptiveLLM相对于基准框架的加速比}{table.caption.11}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces 用户请求平均带权周转时间}}{9}{figure.caption.12}\protected@file@percent }
+\newlabel{Fig:平均带权周转时间}{{9}{9}{用户请求平均带权周转时间}{figure.caption.12}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces 推理任务抢占行为记录}}{9}{table.caption.13}\protected@file@percent }
+\newlabel{Table:推理任务抢占行为记录}{{4}{9}{推理任务抢占行为记录}{table.caption.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4.}实时性测试}{9}{subsection.5.4}\protected@file@percent }
+\newlabel{Eq:Weighted Around Time}{{5}{9}{实时性测试}{equation.5.5}{}}
 \citation{Huggingface-Accelerate}
 \citation{GPT-175B资源消耗}
 \citation{Swapping}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.}开销预测}{10}{subsection.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(1)}张量重算预测误差}{10}{subsubsection.5.5.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces OPT模型单步迭代执行时间预测误差}}{10}{table.caption.14}\protected@file@percent }
+\newlabel{Table:OPT模型单步迭代执行时间预测误差}{{5}{10}{OPT模型单步迭代执行时间预测误差}{table.caption.14}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces LLama模型单步迭代执行时间预测误差}}{10}{table.caption.15}\protected@file@percent }
+\newlabel{Table:LLama模型单步迭代执行时间预测误差}{{6}{10}{LLama模型单步迭代执行时间预测误差}{table.caption.15}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(2)}张量交换预测误差}{10}{subsubsection.5.5.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces 交换开销预测误差}}{10}{figure.caption.16}\protected@file@percent }
+\newlabel{Fig:交换开销预测误差}{{10}{10}{交换开销预测误差}{figure.caption.16}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6.}其它测试}{10}{subsection.5.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6.}相关工作}{10}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(1)}早期工作}{10}{subsubsection.6.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(2)}张量交换的提出}{10}{subsubsection.6.0.2}\protected@file@percent }
 \citation{ORCA}
 \citation{vLLM}
 \citation{SpecInfer}
 \citation{DistillSpec}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.}实时性测试}{9}{subsection.4.5}\protected@file@percent }
-\newlabel{Eq:Weighted Around Time}{{5}{9}{实时性测试}{equation.4.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.}开销分析}{9}{subsection.4.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5.}相关工作}{9}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6.}未来工作}{9}{section.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {(1)}张量压缩技术}{9}{subsubsection.6.0.1}\protected@file@percent }
+\citation{Swapping}
 \citation{SARATHI}
 \citation{Parallelism}
 \bibstyle{gbt7714-numerical}
@@ -108,12 +121,14 @@
 \bibcite{Smart-Home}{{3}{2024}{{{Md. Motiur Rahman} et~al.}}{{{Md. Motiur Rahman}, {Deepti Gupta}, {Smriti Bhatt}, {Shiva Shokouhmand}, and {Miad Faezipour}}}}
 \bibcite{Self-Driving-Car}{{4}{2024}{{{Aditya Gupta} et~al.}}{{{Aditya Gupta}, {Ayushi Gupta}, {Gaurav Raj}, {Tanupriya Choudhury}, {Ayan Sar}, {Ketan Kotecha}, and {Turgut Ozseven}}}}
 \bibcite{Deep-Learning}{{5}{2024}{{{Christopher M. Bishop} et~al.}}{{{Christopher M. Bishop} and {Hugh Bishop}}}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces 用户请求平均带权周转时间}}{10}{figure.caption.13}\protected@file@percent }
-\newlabel{Fig:用户请求平均带权周转时间}{{7}{10}{用户请求平均带权周转时间}{figure.caption.13}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {(2)}张量优化与前向传播的并行}{10}{subsubsection.6.0.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {(3)}张量并行与流水线并行\cite  {Parallelism}}{10}{subsubsection.6.0.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7.}结论}{10}{section.7}\protected@file@percent }
 \bibcite{NLP}{{6}{2024}{{{Jamin Rahman Jim} et~al.}}{{{Jamin Rahman Jim}, {Md Apon Riaz Talukder}, {Partha Malakar}, {Md. Mohsin Kabir}, {Kamruddin Nur}, and {Muhammad Firoz Mridha}}}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(3)}调度粒度的转变}{11}{subsubsection.6.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(4)}投机推理技术}{11}{subsubsection.6.0.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7.}未来工作}{11}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(1)}张量压缩技术}{11}{subsubsection.7.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(2)}内存优化与前向传播的并行}{11}{subsubsection.7.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(3)}张量并行与流水线并行~\cite  {Parallelism}}{11}{subsubsection.7.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8.}结论}{11}{section.8}\protected@file@percent }
 \bibcite{LLM}{{7}{2024}{{{Yupeng Chang} et~al.}}{{{Yupeng Chang}, {Xu Wang}, {Jindong Wang}, {Yuan Wu}, {Linyi Yang}, {Kaijie Zhu}, {Hao Chen}, {Xiaoyuan Yi}, {Cunxiang Wang}, {Yidong Wang}, {Wei Ye}, {Yue Zhang}, {Yi Chang}, {Philip S. Yu}, {Qiang Yang}, and {Xing Xie}}}}
 \bibcite{Text-Summarization}{{8}{2022}{{{Tanya Goyal} et~al.}}{{{Tanya Goyal}, {Junyi Jessy Li}, and {Greg Durrett}}}}
 \bibcite{Machine-Translation}{{9}{2024}{{{Zhaopeng Feng} et~al.}}{{{Zhaopeng Feng}, {Yan Zhang}, {Hao Li}, {Wenqiang Liu}, {Jun Lang}, {Yang Feng}, {Jian Wu}, and {Zuozhu Liu}}}}
@@ -137,4 +152,4 @@
 \bibcite{DistillSpec}{{27}{2023}{{{Yongchao Zhou} et~al.}}{{{Yongchao Zhou}, {Kaifeng Lyu}, {Ankit Singh Rawat}, {Aditya Krishna Menon}, {Afshin Rostamizadeh}, {Sanjiv Kumar}, {Jean{-}Fran{\c {c}}ois Kagy}, and {Rishabh Agarwal}}}}
 \bibcite{SARATHI}{{28}{2023}{{{Amey Agrawal} et~al.}}{{{Amey Agrawal}, {Ashish Panwar}, {Jayashree Mohan}, {Nipun Kwatra}, {Bhargav S. Gulavani}, and {Ramachandran Ramjee}}}}
 \bibcite{Parallelism}{{29}{2024}{{{Felix Brakel} et~al.}}{{{Felix Brakel}, {Uraz Odyurt}, and {Ana Lucia Varbanescu}}}}
-\gdef \@abspage@last{11}
+\gdef \@abspage@last{12}

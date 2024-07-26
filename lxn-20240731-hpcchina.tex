@@ -38,11 +38,11 @@
 %中文摘要
 %wsq 什么叫张量优化策略？应该是内存优化策略？全文修改
 \cabstract{
-  大语言模型（LLMs）拥有极高的参数量，为推理任务带来GPU内存瓶颈。传统LLM推理框架引入张量交换和张量重算等技术，在有限的GPU内存上牺牲性能完成推理。然而，已有研究工作无法根据推理任务运行时信息自适应地选择内存优化技术，导致推理任务的性能无法进一步提升。同时这些工作没有实现整体吞吐率与单请求延时之间的权衡，常以二者之一作为优化目标。针对以上问题，本文面向大模型推理服务场景，提出AdaptiveLLM，一款基于张量交换和张量重算的LLM推理框架。AdaptiveLLM实现了张量重算和张量交换开销预测，其预测误差分别在2\%和4\%以下；引入基于开销感知的内存优化策略，实现服务器端处理加速；引入基于公平性的用户请求调度策略，实现客户端实时请求响应。本文在常见LLM和数据集上开展实验，以vLLM作为基准程序进行对比评估。结果表明，基于开销感知的内存优化策略带来1.1到1.4的整体吞吐加速比；基于公平性的用户请求调度策略使平均带权周转时间降低20\%至40\%。由此证明AdaptiveLLM在优化过程中权衡整体吞吐率与单请求延时，实现LLM高效推理。
+  大语言模型（LLMs）拥有极高的参数量，为推理任务带来GPU内存瓶颈。传统LLM推理框架引入张量交换和张量重算等技术，在有限的GPU内存上牺牲性能完成推理。然而，已有研究工作无法根据推理任务运行时信息自适应地选择内存优化技术，导致推理任务的性能无法进一步提升。同时这些工作没有实现整体吞吐率与单请求延时之间的权衡，常以二者之一作为优化目标。针对以上问题，本文面向LLM推理服务场景，提出AdaptiveLLM，一款基于张量交换和张量重算的LLM推理框架。AdaptiveLLM实现了张量重算和张量交换开销预测，其预测误差分别在2\%和4\%以下。在此基础上引入基于开销感知的内存优化策略，实现服务器端处理加速。同时引入基于公平性的用户请求调度策略，实现客户端实时请求响应。本文在常见LLM和数据集上开展实验，以vLLM作为基准程序进行对比评估。结果表明，基于开销感知的内存优化策略带来10\%到40\%的整体吞吐率提升，基于公平性的用户请求调度策略使平均带权周转时间降低20\%至40\%。由此证明AdaptiveLLM在优化过程中权衡整体吞吐率与单请求延时，实现LLM高效推理。
 }
 %中文关键词
 \keyword{
-  大语言模型、推理、张量交换、张量重算
+  大语言模型；推理；张量交换；张量重算
 }
 
 %英文标题
@@ -54,13 +54,13 @@
   \textsuperscript{1} (Tsinghua University, Beijing 100084)
 }
 %英文摘要
-% wsq英文部分对照上面修改
+% wsq 英文部分对照上面修改
 \eabstract{
-  Large Language Models (LLMs) come with an extremely high amount of parameters, posing significant challenges for inference tasks. Traditional LLM inference services employ swapping and re-computation techniques, guaranteeing the success of generation at the cost of performance on limited GPU memory. However, existing LLM serving systems fail to search memory management schemes adaptively based on runtime information, leading to a sub-optimal performance. Furthermore, these works are inferior in the trade-off between throughput and latency, preferring on only one and compromising the other. To address the above issues, we propose AdaptiveLLM, an efficient LLM service for inference tasks based on swapping and re-computation. We implements an overhead predictor for swapping and re-computation, with an error rate lower than 2\% and 4\% respectively. AdaptiveLLM adopts a cost-aware memory optimization algorithm and a fairness-based request scheduling algorithm based on the overhead predictor. The former improves the throughput on the server, and the latter reduces latency for the client, making a enhancement on the real-time performance. On typical LLMs and datasets, our evaluation shows that the cost-aware memory optimization algorithm improves the throughput by 10\% to 40\%, and the fairness-based request scheduling algorithm reduces the average weighted around time by 20\% to 40\%, compared with the vLLM baseline. In conclusion, AdaptiveLLM achieves efficient LLM inference by making a better trade off between throughput and latency.
+  Large Language Models(LLMs) come with an extremely high amount of parameters, posing significant challenges for inference tasks. Traditional LLM inference services employ swapping and re-computation techniques, guaranteeing the success of generation at the cost of performance on limited GPU memory. However, existing LLM serving systems fail to search memory management schemes adaptively based on runtime information, leading to a sub-optimal performance. Furthermore, these works are inferior in the trade-off between throughput and latency, preferring on only one and compromising the other. To address the above issues, we propose AdaptiveLLM, an efficient LLM service for inference tasks based on swapping and re-computation. We implement an overhead predictor for swapping and re-computation, with an error rate lower than 2\% and 4\% respectively. AdaptiveLLM adopts a cost-aware memory optimization algorithm and a fairness-based request scheduling algorithm based on the overhead predictor. The former improves the throughput on the server, and the latter reduces latency for the client, making a enhancement on the real-time performance. On typical LLMs and datasets, our evaluation shows that the cost-aware memory optimization algorithm improves the throughput by 10\% to 40\%, and the fairness-based request scheduling algorithm reduces the average weighted around time by 20\% to 40\%, compared with the vLLM baseline. In conclusion, AdaptiveLLM achieves efficient LLM inference by making a better trade off between throughput and latency.
 }
 %英文关键词
 \ekeyword{
-  LLM, inference, swapping, re-computation
+  LLM; inference; swapping; re-computation
 }
 
 %基金号
@@ -80,11 +80,12 @@
   \maketitle
   \input{1.introduction.tex}
   \input{2.background}
-  \input{3.design}
-  \input{4.evaluation}
-  \input{5.related-work}
-  \input{6.future-work}
-  \input{7.conclusion}
+  \input{3.motivation}
+  \input{4.design}
+  \input{5.evaluation}
+  \input{6.related-work}
+  \input{7.future-work}
+  \input{8.conclusion}
   \bibliographystyle{gbt7714-numerical}
   \bibliography{references}
 \end{document}
