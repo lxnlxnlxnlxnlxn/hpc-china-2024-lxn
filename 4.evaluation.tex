@@ -10,7 +10,7 @@
   \centering
   \caption{实验平台的软硬件配置}
   \label{Table:实验平台的软硬件配置}
-  \renewcommand{\arraystretch}{1.2}
+  \renewcommand{\arraystretch}{1.3}
   \small
   \begin{tabular}{c c}
     \toprule
@@ -61,7 +61,7 @@
   \centering
   \caption{实验数据集选取}
   \label{Table:实验数据集选取}
-  \renewcommand{\arraystretch}{1.2}
+  \renewcommand{\arraystretch}{1.3}
   \small
   \begin{tabular}{c c c c}
     \toprule
@@ -73,13 +73,6 @@
     \bottomrule
   \end{tabular}
 \end{table}
-
-\begin{figure*}[!htbp]
-  \centering
-  \includegraphics[width=0.85\linewidth]{推理任务吞吐率.png}
-  \caption{推理任务吞吐率}
-  \label{Fig:推理任务吞吐率}
-\end{figure*}
 
 三个数据集的样本序列长度分布曲线如图\ref{Fig:序列长度分布曲线}所示。Chatbot和Alpaca中大多数序列长度较短，而Summary中序列长度展现出很大差异性，且包含长序列。它们涵盖了LLM应用程序面临的大部分场景。
 
@@ -113,6 +106,13 @@
 
 \subsection{吞吐率测试}
 
+\begin{figure*}[!htbp]
+  \centering
+  \includegraphics[width=0.9\linewidth]{推理任务吞吐率.png}
+  \caption{推理任务吞吐率}
+  \label{Fig:推理任务吞吐率}
+\end{figure*}
+
 本文以vLLM作为基准框架，针对AdaptiveLLM进行吞吐率测试。同时，对vLLM框架稍加修改形成vLLM$\_$s，即内存管理器在GPU内存不足时固定调用张量交换技术。 \par
 
 %wsq 添加和vLLM_s比较结果的描述
@@ -122,7 +122,7 @@
   \centering
   \caption{AdaptiveLLM相对于基准框架的加速比}
   \label{Table:AdaptiveLLM相对于基准框架的加速比}
-  \renewcommand{\arraystretch}{1.25}
+  \renewcommand{\arraystretch}{1.3}
   \small
   \begin{tabular}{c c c c}
     \toprule
@@ -139,22 +139,13 @@
 %wsq 论文中每一句都要对自己的工作有正向意义，这句只暴露了自己的弊端
 由于Summary数据集的平均序列长度和方差均明显高于Alpaca和Chatbot数据集，因此在相同条件下，其推理吞吐率低于Alpaca和Chatbot。尽管如此，以vLLM作为基准框架时，AdaptiveLLM在Summary数据集上也达到了1.1$\times$加速比。
 
-\begin{figure*}[!htbp]
-  \centering
-  \includegraphics[width=0.85\linewidth]{用户请求平均带权周转时间.png}
-  \caption{用户请求平均带权周转时间}
-  \label{Fig:平均带权周转时间}
-\end{figure*}
-
 表\ref{Table:推理任务抢占行为记录}给出了序列最大输出长度为64时，不同框架推理过程中的抢占行为次数。
-
-在GPU内存不足时，vLLM调用张量重算技术，vLLM$\_$s调用张量交换技术，而AdaptiveLLM能够从二者中选择开销较小的内存优化方式。CPU内存的限制使vLLM$\_$s的批处理大小低于vLLM和AdaptiveLLM，因此吞吐率也较低。当序列最大输出长度限制在较低水平时，每个请求执行推理任务所需的迭代次数较少，资源需求量低，抢占鲜有发生，此时AdaptiveLLM和vLLM的性能差距不大。随着最大输出长度的增加，有限的GPU内存无法满足需求，AdaptiveLLM调用基于开销感知的内存优化策略，展现性能优势。当最大输出长度过大时，无论是AdaptiveLLM还是vLLM，其批处理大小均限制在较低水平，但AdaptiveLLM仍具有明显优势（当序列最大输出长度为256时，AdaptiveLLM在vLLM的基础上实现最高1.3$\times$的加速比）。
 
 \begin{table}[H]
   \centering
   \caption{推理任务抢占行为记录}
   \label{Table:推理任务抢占行为记录}
-  \renewcommand{\arraystretch}{1.25}
+  \renewcommand{\arraystretch}{1.3}
   \small
   \begin{tabular}{c c c c c}
     \toprule
@@ -177,7 +168,20 @@
   \end{tabular}
 \end{table}
 
-由表\ref{Table:推理任务抢占行为记录}可知，在Chatbot和Alpaca数据集的推理任务中，序列长度较短，批处理大小高，换出频繁，导致CPU内存不足，因此AdaptiveLLM执行了少量张量重算操作。在Summary数据集的推理任务中，其序列长度较大，批处理大小低，换入换出较少，极少出现CPU内存不足的现象，此时张量重算操作的执行大部分来源于开销比较的结果。
+\begin{figure*}[!htbp]
+  \centering
+  \includegraphics[width=0.9\linewidth]{用户请求平均带权周转时间.png}
+  \caption{用户请求平均带权周转时间}
+  \label{Fig:平均带权周转时间}
+\end{figure*}
+
+本文研究的推理场景使用贪心采样策略生成新token。在GPU内存不足时，vLLM调用张量重算技术，vLLM$\_$s调用张量交换技术，而AdaptiveLLM能够从二者中选择开销较小的内存优化方式。CPU内存的限制使vLLM$\_$s的批处理大小低于vLLM和AdaptiveLLM，因此吞吐率也较低。当序列最大输出长度限制在较低水平时，每个请求执行推理任务所需的迭代次数较少，资源需求量低，抢占鲜有发生，此时AdaptiveLLM和vLLM的性能差距不大。随着最大输出长度的增加，有限的GPU内存无法满足需求，AdaptiveLLM调用基于开销感知的内存优化策略，展现性能优势。当最大输出长度过大时，无论是AdaptiveLLM还是vLLM，其批处理大小均限制在较低水平，但AdaptiveLLM仍具有明显优势（当序列最大输出长度为256时，AdaptiveLLM在vLLM的基础上实现最高1.3$\times$的加速比）。
+
+在Chatbot和Alpaca数据集的推理任务中，序列长度较短，批处理大小高。根据预测器给出的结果可知，此时张量交换开销小于张量重算开销。然而随着新token的不断生成，大量用户请求需要被换出，导致CPU内存不足。因此AdaptiveLLM执行了大量张量交换操作和少量张量重算操作。
+
+在Summary数据集的推理任务中，其序列长度较大，批处理大小低。张量交换发生频率较低，极少出现CPU内存不足的现象，此时张量重算操作的执行大部分来源于开销比较的结果。
+
+综上所述，在基于开销感知的内存优化策略下，AdaptiveLLM在GPU内存不足时预测张量交换与张量重算开销，并选择开销较小的内存优化技术执行，进而大幅度提升推理任务整体吞吐率。 
 
 \subsection{实时性测试}
 
@@ -213,14 +217,13 @@
   \centering
   \caption{OPT模型单步迭代执行时间预测误差}
   \label{Table:OPT模型单步迭代执行时间预测误差}
-  \renewcommand{\arraystretch}{1.25}
+  \renewcommand{\arraystretch}{1.3}
   \small
   \begin{tabular}{c c c c c c}
     \toprule
     \textbf{模型-拟合次数} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} \\
     \midrule
     线性回归模型 & 46.52 & 46.65 & 28.75 & 11.86 & 9.32 \\ 
-    支持向量机 & 27.76 & 23.51 & 17.88 & 14.03 & 11.29 \\
     决策树 & 1.81 & 1.81 & 1.81 & 1.81 & 1.81 \\ 
     随机森林 & 1.77 & 1.76 & 1.77 & 1.77 & 1.78 \\ 
     岭回归模型 & 46.52 & 46.37 & 28.45 & 11.51 & 7.36 \\ 
@@ -236,14 +239,13 @@
   \centering
   \caption{LLama模型单步迭代执行时间预测误差}
   \label{Table:LLama模型单步迭代执行时间预测误差}
-  \renewcommand{\arraystretch}{1.25}
+  \renewcommand{\arraystretch}{1.3}
   \small
   \begin{tabular}{c c c c c c}
     \toprule
     \textbf{模型-拟合次数} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} \\
     \midrule
     线性回归模型 & 76.41 & 69.44 & 39.61 & 12.91 & 9.18 \\ 
-    支持向量机 & 55.82 & 37.50 & 26.44 & 22.92 & 19.19 \\ 
     决策树 & 1.33 & 1.32 & 1.33 & 1.33 & 1.34 \\ 
     随机森林 & 1.31 & 1.30 & 1.31 & 1.31 & 1.31 \\ 
     岭回归模型 & 76.41 & 69.01 & 39.18 & 12.73 & 7.72 \\ 
@@ -254,6 +256,8 @@
     \bottomrule
   \end{tabular}
 \end{table}
+
+张量重算开销由张量重算分析器根据LLM层数、LLM隐藏维度、单请求需要处理的token数量、以及批处理大小预测得到。表\ref{Table:OPT模型单步迭代执行时间预测误差}和表\ref{Table:LLama模型单步迭代执行时间预测误差}分别展示了OPT模型和Llama模型单步推理执行时间的预测效果。OPT执行时间预测任务共有6.4w条训练数据和1.6w条测试数据，结果表明，随机森林回归模型性能最佳，其在拟合2次多项式时能够达到1.76\%的预测误差。Llama执行时间预测任务共有6.8条训练数据和1.7w条测试数据，结果表明，随机森林模型同样性能最佳，其在拟合2次多项式时能够达到1.30\%的预测误差。
 
 % \subsection{其它测试}
 
