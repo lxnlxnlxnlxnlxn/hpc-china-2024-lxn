@@ -104,7 +104,7 @@
 
 % 在贪心采样策略下，对于长序列（如Summary数据集中的部分样本），无论是vLLM还是AdaptiveLLM，都偏向于使用重算，两种策略带来的抢占行为没有差异。对于短序列（如Chatbot和Alpaca数据集），vLLM使用重算，而AdaptiveLLM使用开销较小的交换，此时能够带来吞吐率提升。在LLM实际应用场景中，大多数序列的长度较短，使得张量交换在提升性能上拥有明显优势。而当长序列较多，或者CPU内存空间不足时，张量重算技术能够发挥优势。 
 
-\subsection{吞吐率测试}
+\subsection{\color{red}{吞吐率测试}}
 
 \begin{figure*}[!htbp]
   \centering
@@ -113,7 +113,7 @@
   \label{Fig:推理任务吞吐率}
 \end{figure*}
 
-本文以vLLM作为基准框架，针对AdaptiveLLM进行吞吐率测试。同时，对vLLM框架稍加修改形成vLLM$\_$s，即内存管理器在GPU内存不足时固定调用张量交换技术。 \par
+本文以vLLM作为基准框架，针对AdaptiveLLM进行吞吐率测试。同时，对vLLM框架稍加修改形成vLLM$\_$s，即内存管理器在GPU内存不足时固定调用张量交换技术。
 
 %wsq 添加和vLLM_s比较结果的描述
 图\ref{Fig:推理任务吞吐率}展示了12个实验组在推理任务中的整体吞吐率测试结果，其横坐标为序列最大输出长度。表\ref{Table:AdaptiveLLM相对于基准框架的加速比}给出了最大输出长度为64时，AdaptiveLLM相对于vLLM和vLLM$\_$s的具体加速比（左边数字为vLLM，右边数字为vLLM$\_$s）。结果表明，和vLLM相比，AdaptiveLLM实现了最高1.40$\times$的整体吞吐加速；和vLLM$\_$s相比，AdaptiveLLM实现了最高2.55$\times$的整体吞吐加速。
@@ -256,8 +256,6 @@
     \bottomrule
   \end{tabular}
 \end{table}
-
-张量重算开销由张量重算分析器根据LLM层数、LLM隐藏维度、单请求需要处理的token数量、以及批处理大小预测得到。表\ref{Table:OPT模型单步迭代执行时间预测误差}和表\ref{Table:LLama模型单步迭代执行时间预测误差}分别展示了OPT模型和Llama模型单步推理执行时间的预测效果。OPT执行时间预测任务共有6.4w条训练数据和1.6w条测试数据，结果表明，随机森林回归模型性能最佳，其在拟合2次多项式时能够达到1.76\%的预测误差。Llama执行时间预测任务共有6.8条训练数据和1.7w条测试数据，结果表明，随机森林模型同样性能最佳，其在拟合2次多项式时能够达到1.30\%的预测误差。
 
 % \subsection{其它测试}
 
