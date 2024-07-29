@@ -54,7 +54,6 @@
 
 \subsection{实验设置}
 
-%wsq 数据集及模型给引用- lxn: 前面给过了
 本文选用OPT~\cite{OPT}（OPT-13B、OPT-30B）和Llama~\cite{Llama}（Llama-13B、Llama-32.5B）作为实验模型，在三个常见数据集（Chatbot~\cite{Chatbot}、Alpaca~\cite{Alpaca}、Summary~\cite{Summary}）上进行测试。数据集信息如表\ref{Table:实验数据集选取}所示。
 
 \begin{table}[H]
@@ -104,7 +103,7 @@
 
 % 在贪心采样策略下，对于长序列（如Summary数据集中的部分样本），无论是vLLM还是AdaptiveLLM，都偏向于使用重算，两种策略带来的抢占行为没有差异。对于短序列（如Chatbot和Alpaca数据集），vLLM使用重算，而AdaptiveLLM使用开销较小的交换，此时能够带来吞吐率提升。在LLM实际应用场景中，大多数序列的长度较短，使得张量交换在提升性能上拥有明显优势。而当长序列较多，或者CPU内存空间不足时，张量重算技术能够发挥优势。 
 
-\subsection{\color{red}{吞吐率测试}}
+\subsection{吞吐率测试}
 
 \begin{figure*}[!htbp]
   \centering
@@ -115,8 +114,7 @@
 
 本文以vLLM作为基准框架，针对AdaptiveLLM进行吞吐率测试。同时，对vLLM框架稍加修改形成vLLM$\_$s，即内存管理器在GPU内存不足时固定调用张量交换技术。
 
-%wsq 添加和vLLM_s比较结果的描述
-图\ref{Fig:推理任务吞吐率}展示了12个实验组在推理任务中的整体吞吐率测试结果，其横坐标为序列最大输出长度。表\ref{Table:AdaptiveLLM相对于基准框架的加速比}给出了最大输出长度为64时，AdaptiveLLM相对于vLLM和vLLM$\_$s的具体加速比（左边数字为vLLM，右边数字为vLLM$\_$s）。结果表明，和vLLM相比，AdaptiveLLM实现了最高1.40$\times$的整体吞吐加速；和vLLM$\_$s相比，AdaptiveLLM实现了最高2.55$\times$的整体吞吐加速。
+图\ref{Fig:推理任务吞吐率}展示了12个实验组在推理任务中的整体吞吐率测试结果，其横坐标为序列最大输出长度。表\ref{Table:AdaptiveLLM相对于基准框架的加速比}给出了最大输出长度为64时，AdaptiveLLM相对于vLLM和vLLM$\_$s的具体加速比（左边数字为vLLM，右边数字为vLLM$\_$s）。结果表明，和vLLM相比，AdaptiveLLM实现了最高1.40$\times$的整体吞吐加速。和vLLM$\_$s相比，AdaptiveLLM实现了最高2.55$\times$的整体吞吐加速。
 
 \begin{table}[H]
   \centering
@@ -137,7 +135,7 @@
 \end{table}
 
 %wsq 论文中每一句都要对自己的工作有正向意义，这句只暴露了自己的弊端
-由于Summary数据集的平均序列长度和方差均明显高于Alpaca和Chatbot数据集，因此在相同条件下，其推理吞吐率低于Alpaca和Chatbot。尽管如此，以vLLM作为基准框架时，AdaptiveLLM在Summary数据集上也达到了1.1$\times$加速比。
+由于Summary数据集的平均序列长度和方差均明显高于Alpaca和Chatbot数据集，因此在相同条件下，其推理吞吐率低于Alpaca和Chatbot。尽管如此，与vLLM相比，AdaptiveLLM在Summary数据集上也达到了1.1$\times$加速比。
 
 表\ref{Table:推理任务抢占行为记录}给出了序列最大输出长度为64时，不同框架推理过程中的抢占行为次数。
 
@@ -175,9 +173,9 @@
   \label{Fig:平均带权周转时间}
 \end{figure*}
 
-本文研究的推理场景使用贪心采样策略生成新token。在GPU内存不足时，vLLM调用张量重算技术，vLLM$\_$s调用张量交换技术，而AdaptiveLLM能够从二者中选择开销较小的内存优化方式。CPU内存的限制使vLLM$\_$s的批处理大小低于vLLM和AdaptiveLLM，因此吞吐率也较低。当序列最大输出长度限制在较低水平时，每个请求执行推理任务所需的迭代次数较少，资源需求量低，抢占鲜有发生，此时AdaptiveLLM和vLLM的性能差距不大。随着最大输出长度的增加，有限的GPU内存无法满足需求，AdaptiveLLM调用基于开销感知的内存优化策略，展现性能优势。当最大输出长度过大时，无论是AdaptiveLLM还是vLLM，其批处理大小均限制在较低水平，但AdaptiveLLM仍具有明显优势（当序列最大输出长度为256时，AdaptiveLLM在vLLM的基础上实现最高1.3$\times$的加速比）。
+可以看到，AdaptiveLLM可以根据模型配置，灵活地选择合适的内存优化策略。CPU内存的限制使vLLM$\_$s的批处理大小低于vLLM和AdaptiveLLM，因此吞吐率较低。当序列最大输出长度限制在较低水平时，每个请求执行推理任务所需的迭代次数较少，资源需求量低，抢占鲜有发生，此时AdaptiveLLM和vLLM的性能差距不大。随着最大输出长度的增加，有限的GPU内存无法满足需求，AdaptiveLLM调用基于开销感知的内存优化策略，展现性能优势。当最大输出长度过大时，无论是AdaptiveLLM还是vLLM，其批处理大小均限制在较低水平，但AdaptiveLLM仍具有明显优势（当序列最大输出长度为256时，AdaptiveLLM在vLLM的基础上实现最高1.3$\times$的加速比）。
 
-在Chatbot和Alpaca数据集的推理任务中，序列长度较短，批处理大小高。根据预测器给出的结果可知，此时张量交换开销小于张量重算开销。然而随着新token的不断生成，大量用户请求需要被换出，导致CPU内存不足。因此AdaptiveLLM执行了大量张量交换操作和少量张量重算操作。
+此外，在Chatbot和Alpaca数据集的推理任务中，序列长度较短，批处理大小高。根据预测器给出的结果可知，此时张量交换开销小于张量重算开销。然而随着新token的不断生成，大量用户请求需要被换出，导致CPU内存不足。因此AdaptiveLLM执行了大量张量交换操作和少量张量重算操作。
 
 在Summary数据集的推理任务中，其序列长度较大，批处理大小低。张量交换发生频率较低，极少出现CPU内存不足的现象，此时张量重算操作的执行大部分来源于开销比较的结果。
 
