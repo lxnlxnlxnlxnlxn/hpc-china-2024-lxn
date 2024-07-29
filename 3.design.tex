@@ -202,7 +202,7 @@ AdaptiveLLM维护三个用户请求队列：$waiting$队列、$running$队列与
   \end{spacing}
 \end{algorithm}
 
-客户端发送的用户请求进入$waiting$队列中，而$running$队列和$swapped$队列最初为空（第1-3行）。当GPU内存不足时，调用内存优化算法进行抢占调度（第5行），否则扩充$running$队列。 \par
+客户端发送的用户请求进入$waiting$队列中，而$running$队列和$swapped$队列最初为空（第1-3行）。当GPU内存不足时，调用内存优化算法进行抢占调度（第5行），否则执行启动调度。 \par
 
 用户请求调度器尽可能多地寻找能从$swapped$队列转移至$running$队列的用户请求（第6行），和能从$waiting$队列转移至$running$队列的用户请求（第7行）。对它们进行优先级比较（第8行），若前者的优先级均值较高，则将其直接转移到$running$队列中（第9-10行）；若后者的优先级均值较高，则其执行prefill阶段后（第12行）转移至$running$队列中（第13-14行），同时直接进入下一轮迭代（第15行）。需要注意的是，当GPU内存不足时，无法实现从$swapped$队列或$waiting$队列向$running$队列的调度，即$w\_sche$和$s\_sche$队列均为空，此时也就不存在后续的优先级比较过程了。 \par
 
