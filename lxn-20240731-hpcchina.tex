@@ -24,7 +24,7 @@
 \tracinglostchars=2
 
 %标题
-\title{AdaptiveLLM：基于自适应张量交换和张量重算的大语言模型推理优化技术}
+\title{AdaptiveLLM：基于自适应张量交换和张量重算的大语言模型推理优化}
 
 %作者
 \author{
@@ -53,8 +53,7 @@
 
 %中文摘要
 \cabstract{
-<<<<<<< HEAD
-  大语言模型（LLMs）拥有极高的参数量，导致推理任务GPU内存占用不足产生性能瓶颈。已有LLM推理框架引入张量交换和张量重算等内存优化技术，在有限的GPU内存上通过牺牲性能完成推理。然而，已有工作无法根据推理任务运行时信息自适应地选择内存优化技术，导致推理任务的性能无法进一步提升。同时，这些工作通过以推理任务整体吞吐率或单请求响应延时为单一优化目标，缺乏对上述优化目标的综合考虑。针对以上问题，本文面向LLM推理服务场景，提出了AdaptiveLLM，一款基于自适应张量交换和张量重算的LLM推理框架。AdaptiveLLM实现了张量重算和张量交换开销精准预测，其预测误差分别控制在2\%和4\%以下。在此基础上，引入了基于开销感知的内存优化策略，可以自适应地选择开销较低的内存优化技术，提高了任务整体吞吐率。同时，引入了基于公平性的用户请求调度策略，降低了单请求延时。本文在主流LLM和数据集上开展了实验验证，以vLLM作为基准进行对比评估。实验结果表明，基于开销感知的内存优化策略带来10\%到40\%的整体吞吐率提升，基于公平性的用户请求调度策略使平均带权周转时间降低20\%至40\%。由此证明AdaptiveLLM在推理优化过程中可以更好地权衡整体吞吐率与单请求延时，实现LLM高效推理。
+  大语言模型（LLMs）拥有极高的参数量，为推理任务带来 GPU 内存瓶颈。已有LLM推理框架引入张量交换和张量重算等内存优化技术，在有限的GPU内存上通过牺牲性能完成推理。然而，已有工作无法根据推理任务运行时信息自适应地选择内存优化技术，导致推理任务的性能无法进一步提升。同时，这些工作通过以推理任务整体吞吐率或单请求响应延时为单一优化目标，缺乏对上述优化目标的综合考虑。针对以上问题，本文面向LLM推理服务场景，提出了AdaptiveLLM，一款基于自适应张量交换和张量重算的LLM推理框架。AdaptiveLLM实现了张量重算和张量交换开销精准预测，其预测误差分别控制在2\%和4\%以下。在此基础上，引入了基于开销感知的内存优化策略，可以自适应地选择开销较低的内存优化技术，提高了任务整体吞吐率。同时，引入了基于公平性的用户请求调度策略，降低了单请求延时。本文在主流LLM模型和数据集上开展实验验证，以vLLM作为基准进行对比评估。结果表明，AdaptiveLLM实现10\%到40\%的整体吞吐率提升，同时使平均带权周转时间降低20\%至40\%。由此证明AdaptiveLLM在推理优化过程中可以更好地权衡整体吞吐率与单请求延时，实现LLM高效推理。
 }
 %中文关键词
 \keyword{
@@ -78,7 +77,7 @@
 }
 %英文摘要
 \eabstract{
-  Large Language Models(LLMs) come with an extremely high amount of parameters, posing significant challenges for inference tasks. Traditional LLM inference services employ swapping and re-computation techniques, guaranteeing the success of generation at the cost of performance on limited GPU memory. However, existing LLM serving systems fail to search memory management schemes adaptively based on runtime information, leading to a sub-optimal performance. Furthermore, these works are inferior in the trade-off between throughput and latency, preferring on only one and compromising the other. To address the above issues, we propose \textit{AdaptiveLLM}, an efficient LLM serving framework for inference tasks based on swapping and re-computation. Specifically, \textit{AdaptiveLLM} implements an overhead predictor for swapping and re-computation, with an error rate lower than 2\% and 4\% respectively. \textit{AdaptiveLLM} also adopts a cost-aware memory optimization algorithm and a fairness-based request scheduling algorithm based on the overhead predictor. The former improves the throughput on the server, and the latter reduces latency for the client, making a enhancement on the real-time performance. On typical LLMs and datasets, our evaluation shows that the cost-aware memory optimization algorithm improves the throughput by 10\% to 40\%, and the fairness-based request scheduling algorithm reduces the average weighted around time by 20\% to 40\%, compared with the vLLM. In conclusion, \textit{AdaptiveLLM} achieves efficient LLM inference by making a better trade off between throughput and latency.
+  Large Language Models(LLMs) come with an extremely high amount of parameters, posing significant challenges for inference tasks. Traditional LLM inference services employ swapping and re-computation techniques, guaranteeing the success of generation at the cost of performance on limited GPU memory. However, existing LLM serving systems fail to search memory management schemes adaptively based on runtime information, leading to a sub-optimal performance. Furthermore, these works are inferior in the trade-off between throughput and latency, preferring on only one and compromising the other. To address the above issues, we propose \textit{AdaptiveLLM}, an efficient LLM serving framework for inference tasks based on swapping and re-computation. Specifically, \textit{AdaptiveLLM} implements an overhead predictor for swapping and re-computation, with an error rate lower than 2\% and 4\% respectively. \textit{AdaptiveLLM} also adopts a cost-aware memory optimization algorithm which improves the throughput on the server, and a fairness-based request scheduling algorithm which reduces latency for the client. On typical LLMs and datasets, our evaluation shows that \textit{AdaptiveLLM} improves the throughput by 10\% to 40\%, and reduces the average weighted around time by 20\% to 40\%, compared with the vLLM. In conclusion, \textit{AdaptiveLLM} achieves efficient LLM inference by making a better trade off between throughput and latency.
 }
 %英文关键词
 \ekeyword{
