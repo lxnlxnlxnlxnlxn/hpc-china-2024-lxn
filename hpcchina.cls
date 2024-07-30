@@ -157,7 +157,7 @@
 }
 
 \fancyhead[L]{\hspace*{2.2mm}\zihao{-5}\thepage}
-\setlength{\headheight}{12.44405pt}
+\fancyhead[R]{}
 \fancyfoot[L,C,R]{}
 \pagestyle{fancy}
 

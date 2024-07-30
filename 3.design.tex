@@ -17,15 +17,14 @@ AdaptiveLLM实现了三个主要功能模块，包括张量重算开销分析器
 
 \subsection{张量重算开销分析器}
 
+张量重算技术的时间线流程如图\ref{Fig:张量重算示意图}所示。抢占调度时，重算执行器在内存中删除用户请求的KV Cache张量。启动调度时，执行一次prefill阶段来恢复被删除的数据。因此，张量重算引入的额外开销等于被抢占请求执行prefill阶段的时间。
+
 \begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.9\linewidth]{张量重算示意图.png}
   \caption{张量重算时间线流程}
   \label{Fig:张量重算示意图}
 \end{figure}
-
-张量重算技术的时间线流程如图\ref{Fig:张量重算示意图}所示。抢占调度时，重算执行器在内存中删除用户请求的KV Cache张量。启动调度时，执行一次prefill阶段来恢复被删除的数据。因此，张量重算引入的额外开销等于被抢占请求执行prefill阶段的时间。
-
 
 本文以OPT和Llama模型为例，通过算子粒度复杂度分析来识别单步推理时间的影响因素。
 
