@@ -6,14 +6,7 @@
 
 LLM推理任务以token作为输入与输出的基本单位。对于生成式推理任务，每次前向传播计算仅生成一个新token。一般来说，其包含两个阶段：prefill阶段读取用户输入的token序列，生成第一个token；decode阶段分为多步进行，依次生成后续token，直至得到终止token。在推理过程中，每个token拥有一个key-value张量对，为自注意力机制下的编码结果。
 
-在decode阶段中，每个token的计算均依赖于前序token的key值和value值。如果每次计算前都重新调用自注意力机制来获取前序token的key-value张量，则会产生大量不必要的计算开销。主流LLM推理服务~\cite{Swapping, vLLM, ORCA, SpecInfer}框架普遍采用KV Cache数据结构来保存这些token的key-value张量，方便后续token的生成，避免重复计算，其工作原理如图\ref{Fig:KV Cache的功能示意图}所示。
-
-\begin{figure}[!htbp]
-  \centering
-  \includegraphics[width=0.9\linewidth]{KV Cache的功能示意图.png}
-  \caption{KV Cache的功能示意图}
-  \label{Fig:KV Cache的功能示意图}
-\end{figure}
+在decode阶段中，每个token的计算均依赖于前序token的key值和value值。如果每次计算前都重新调用自注意力机制来获取前序token的key-value张量，则会产生大量不必要的计算开销。主流LLM推理服务~\cite{Swapping, vLLM, ORCA, SpecInfer,SARATHI}框架普遍采用KV Cache数据结构来保存这些token的key-value张量，方便后续token的生成，避免重复计算。
 
 然而，随着后续token的不断生成，KV Cache迅速扩展，产生推理内存瓶颈。例如，在OPT-13B模型中，对于一个长度为100的用户请求，其KV Cache能够占用39.1MB的内存空间。有限的GPU内存将批处理大小限制在较低水平，阻碍推理并发度的进一步提升，进而限制吞吐率。
 
@@ -32,6 +25,7 @@ KV Cache的引入方便了计算过程，却带来内存瓶颈，使得LLM推理
 为了攻克推理内存瓶颈，传统框架引入了张量交换技术~\cite{Swapping, vLLM, LightLLM}，将暂时不会使用的KV Cache传输至CPU中，在计算需要时重新传输至GPU中。然而，CPU-GPU间有限的PCIe带宽使得换出和换入过程产生不可忽略的通信开销，限制吞吐率，降低推理性能。部分研究提出~\cite{Recomputation}，当张量交换带来的开销超过重新调用自注意力机制的开销时，应选择后者来获取所有前序token的key-value张量，也称张量重算。具体来说，内存管理器直接删除重算请求对应的KV Cache，在其被调度时执行一次prefill阶段来代替原本应该执行的decode阶段。重算与交换的联合使用缓解了通信开销问题，然而，当GPU内存不足时，如何在二者中进行选择成为了新的困境。AdaptiveLLM针对此问题设计了基于开销感知的内存优化策略，能够预测二者的开销，并选择开销小的过程执行。
 
 % wsq 把这一章融合进上一节中，不用提张量压缩
+
 % \subsection{针对KV Cache的张量优化技术}
 
 % 在LLM推理服务过程中，传统的张量优化（也称抢占）技术有三种：张量交换、张量重算和张量压缩~\cite{Swapping}。AdaptiveLLM实现了张量交换与张量重算。而张量压缩目前还未能实现，将在本文第五章介绍。

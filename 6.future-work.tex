@@ -1,19 +1,18 @@
 \section{未来工作}
 
-本文将针对以下部分进一步完善AdaptiveLLM框架的设计。
+\subsubsection{面向截止时间点的调度}
 
-\subsubsection{张量压缩技术}
-
-有限的PCIe传输带宽使数据的GPU-CPU传输带来无法忽略的通信开销。随着LLM参数量和批处理大小的增加，通信开销成为主要性能瓶颈。近期工作中~\cite{Swapping}，张量压缩技术常与张量交换技术联合使用，通过矩阵变换等数学方式减少传输参数量。高效的压缩技术能够在不损失张量精度的前提下减小通信开销，进一步提升批处理大小上限，提升吞吐率。
+用户请求往往需要在特定时间截点（DDL）前完成，DDL离当前时间点越近，该请求的紧迫程度就越高，在设计调度策略时应当有所考虑。Cilantro~\cite{Cilantro}等框架能够基于用户反馈对不同任务的优先级进行动态调整。而AdaptiveLLM的调度策略仅满足了公平性，没有考虑用户的真正需求。
 
 \subsubsection{内存优化与前向传播的并行}
 
-\begin{itemize}
+一、张量交换与前向传播的并行。张量交换的本质是GPU-CPU通信传输过程，而前向传播的本质是GPU计算过程。二者在传统模式下串行执行。AdaptiveLLM计划在内存优化决策器中设计一个交换线程和一个计算线程，并行完成两项任务，进一步减少张量交换带来的额外开销。
 
-  \item \textbf{张量交换与前向传播的并行}：张量交换的本质是GPU-CPU通信传输过程，而前向传播的本质是GPU计算过程。二者在传统模式下串行执行。AdaptiveLLM计划在内存优化决策器中设计一个交换线程和一个计算线程，并行完成两项任务，进一步减少张量交换带来的额外开销。
+二、张量重算与前向传播的并行。SARATHI~\cite{SARATHI}框架研发了chunk-prefill技术，实现了prefill阶段与decode阶段的共置运行。由于张量重算的本质是prefill过程，因此若将该技术移植到AdaptiveLLM中，可以实现张量重算与前向传播的并行。
 
-  \item \textbf{张量重算与前向传播的并行}：SARATHI~\cite{SARATHI}框架研发了chunk-prefill技术，实现prefill阶段与decode阶段共置运行。由于张量重算的本质是prefill过程，因此若将该技术移植到AdaptiveLLM中，可以实现张量重算与前向传播的并行。
+\subsubsection{张量并行与流水线并行} 
 
-\end{itemize}
+张量并行（Tensor Parallelism，TP）针对同一节点内的不同GPU实现；流水线并行（Pipeline Parallelism，PP）针对不同节点实现。目前，AdaptiveLLM的优化技术仅应用于单个GPU。实验平台提供了不同GPU间的PCIe通信和不同节点间的无线带宽网络通信，本文将在未来集成TP与PP并行技术。
 
-\subsubsection{张量并行与流水线并行~\cite{Parallelism}} AdaptiveLLM目前仅针对张量并行度与流水线并行度均为1的场景进行优化，本文将在未来实现张量并行技术与流水线并行技术。
+另外，AdaptiveLLM提出的内存优化策略和用户请求调度策略在理论上能够扩展至大部分不同配置的服务器平台，将在未来开展进一步测试。
+
