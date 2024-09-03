@@ -53,7 +53,7 @@
 
 \begin{figure*}[!htbp]
   \centering
-  \includegraphics[width=0.88\linewidth]{推理任务吞吐率.png}
+  \includegraphics[width=0.85\linewidth]{推理任务吞吐率.png}
   \caption{推理任务吞吐率}
   \label{Fig:推理任务吞吐率}
 \end{figure*}
@@ -81,7 +81,7 @@
 
 Chatbot和Alpaca中大多数序列长度较短，而Summary中序列长度展现出很大差异性，且包含长序列。它们涵盖了LLM应用程序面临的大部分场景。
 
-实验过程中的参数设置模拟LLM应用程序在多任务并发场景下的运行状态。具体来说，本文将GPU Block数量设置为128，以保证抢占调度在GPU内存不足时得以发生；将CPU Block数量设置为64，以避免内存优化决策器简单地将部分序列交付张量交换执行器。针对12个实验组，在相应数据集中使用简单随机抽样法选取1000个样本进行后续测试。
+实验过程中的参数设置模拟LLM应用程序在多任务并发场景下的运行状态。{\color{red} 具体来说，本文将GPU Block数量设置为128，以保证抢占调度在GPU内存不足时得以发生；将CPU Block数量设置为64，以避免内存优化决策器简单地将部分序列交付张量交换执行器。}针对12个实验组，在相应数据集中使用简单随机抽样法选取1000个样本进行后续测试。
 
 %wsq 实验部分改一下顺序，重要的实验放前面。吞吐率测试，实时性测试，执行时间预测，开销分析。
 
@@ -104,7 +104,7 @@ Chatbot和Alpaca中大多数序列长度较短，而Summary中序列长度展现
 
 \subsection{吞吐率测试}
 
-本文以vLLM作为基准框架，针对AdaptiveLLM进行吞吐率测试。同时，对vLLM框架稍加修改形成vLLM$\_$s，即内存管理器在GPU内存不足时固定调用张量交换技术。图\ref{Fig:推理任务吞吐率}展示了12个实验组在推理任务中的整体吞吐率测试结果，其横坐标为序列最大输出长度。表\ref{Table:AdaptiveLLM相对于基准框架的加速比}给出了最大输出长度为64时，AdaptiveLLM相对于vLLM和vLLM$\_$s的具体加速比。结果表明，相比于vLLM和vLLM$\_$s基准框架，AdaptiveLLM实现了最高1.40$\times$和2.55$\times$的整体吞吐加速。
+本文以vLLM作为基准框架，针对AdaptiveLLM进行吞吐率测试。{\color{red}由于本文在推理过程中使用贪心采样策略来生成新token，因此vLLM内存管理器在GPU内存不足时固定调用张量重算技术。同时，对vLLM框架稍加修改形成vLLM$\_$s，使其固定调用张量交换技术。}图\ref{Fig:推理任务吞吐率}展示了12个实验组在推理任务中的整体吞吐率测试结果，其横坐标为序列最大输出长度。表\ref{Table:AdaptiveLLM相对于基准框架的加速比}给出了最大输出长度为64时，AdaptiveLLM相对于vLLM和vLLM$\_$s的具体加速比。结果表明，相比于vLLM和vLLM$\_$s基准框架，AdaptiveLLM实现了最高1.40$\times$和2.55$\times$的整体吞吐加速。
 
 %wsq 论文中每一句都要对自己的工作有正向意义，这句只暴露了自己的弊端
 由于Summary数据集的平均序列长度和方差均明显高于Alpaca和Chatbot数据集，因此在相同条件下，其推理吞吐率低于Alpaca和Chatbot。尽管如此，与vLLM相比，AdaptiveLLM在Summary数据集上也达到了1.1$\times$加速比。
@@ -137,7 +137,7 @@ AdaptiveLLM可以根据模型配置，灵活地选择合适的内存优化策略
 
 \begin{figure*}[!htbp]
   \centering
-  \includegraphics[width=0.88\linewidth]{用户请求平均带权周转时间.png}
+  \includegraphics[width=0.85\linewidth]{用户请求平均带权周转时间.png}
   \caption{用户请求平均带权周转时间}
   \label{Fig:平均带权周转时间}
 \end{figure*}
@@ -181,7 +181,7 @@ AdaptiveLLM可以根据模型配置，灵活地选择合适的内存优化策略
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=0.90\linewidth]{交换开销预测误差.png}
+  \includegraphics[width=0.85\linewidth]{交换开销预测误差.png}
   \caption{交换开销预测误差}
   \label{Fig:交换开销预测误差}
 \end{figure}
@@ -190,4 +190,4 @@ AdaptiveLLM可以根据模型配置，灵活地选择合适的内存优化策略
 
 基于开销感知的内存优化策略在获取张量重算和张量交换开销时，会带来新的预测开销。本文设计如下对照实验获取预测过程的开销：在吞吐率测试过程中，当GPU内存不足时调用开销比较过程，但最终使用vLLM提供的固定式内存优化策略（张量重算）。观察此情景下推理任务的总用时可知，预测开销在推理任务中仅占0.1\%至1\%。
 
-基于公平性的用户请求调度策略也有一定的开销。理论上，该算法的时间复杂度为$O(r^2)$，其中$r$为running队列中用户请求的数量。在实际运行过程中，每次调度的开销在0.2ms左右，总开销在推理任务中仅占0.5\%至1\%。综上所述，AdaptiveLLM引入的两种优化策略所带来的额外开销均可忽略不计。
+{\color{red}基于公平性的用户请求调度策略也有一定的开销。理论上，该算法的时间复杂度为$O(r^2)$，其中$r$为running队列中用户请求的数量。在实际运行过程中，每次调度的开销在0.2ms左右，总开销在推理任务中仅占0.5\%至1\%。综上所述，AdaptiveLLM引入的两种优化策略所带来的额外开销均可忽略不计。}

@@ -2,7 +2,7 @@
 
 \subsubsection{面向截止时间点的调度}
 
-用户请求往往需要在特定时间截点（DDL）前完成，DDL离当前时间点越近，该请求的紧迫程度就越高，在设计调度策略时应当有所考虑。Cilantro~\cite{Cilantro}等框架能够基于用户反馈对不同任务的优先级进行动态调整。而AdaptiveLLM的调度策略仅满足了公平性，没有考虑用户的真正需求。
+{\color{red}用户请求往往需要在特定时间截点（DDL）前完成，DDL离当前时间点越近，该请求的紧迫程度就越高，在设计调度策略时应当有所考虑。Cilantro~\cite{Cilantro}等框架能够基于用户反馈对不同任务的优先级进行动态调整。而AdaptiveLLM的调度策略仅满足了公平性，没有考虑用户的真正需求。}
 
 \subsubsection{内存优化与前向传播的并行}
 
@@ -12,7 +12,7 @@
 
 \subsubsection{张量并行与流水线并行} 
 
-张量并行（Tensor Parallelism，TP）针对同一节点内的不同GPU实现；流水线并行（Pipeline Parallelism，PP）针对不同节点实现。目前，AdaptiveLLM的优化技术仅应用于单个GPU。实验平台提供了不同GPU间的PCIe通信和不同节点间的无线带宽网络通信，本文将在未来集成TP与PP并行技术。
+{\color{red}张量并行（Tensor Parallelism，TP）针对同一节点内的不同GPU实现；流水线并行（Pipeline Parallelism，PP）针对不同节点实现。目前，AdaptiveLLM的优化技术仅应用于单个GPU。实验平台提供了不同GPU间的PCIe通信和不同节点间的无线带宽网络通信，本文将在未来集成TP与PP并行技术。}
 
-另外，AdaptiveLLM提出的内存优化策略和用户请求调度策略在理论上能够扩展至大部分不同配置的服务器平台，将在未来开展进一步测试。
+{\color{red}另外，AdaptiveLLM提出的内存优化策略和用户请求调度策略在理论上能够扩展至大部分不同配置的服务器平台，将在未来开展进一步测试。}
 
