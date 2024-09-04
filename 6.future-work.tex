@@ -2,17 +2,23 @@
 
 \subsubsection{面向截止时间点的调度}
 
-{\color{red}用户请求往往需要在特定时间截点（DDL）前完成，DDL离当前时间点越近，该请求的紧迫程度就越高，在设计调度策略时应当有所考虑。Cilantro~\cite{Cilantro}等框架能够基于用户反馈对不同任务的优先级进行动态调整。而AdaptiveLLM的调度策略仅满足了公平性，没有考虑用户的真正需求。}
+{\color{red}用户向服务器端提交推理请求，往往期望在特定时间截点（DDL）前得到完整输出。DDL离当前时间越近，该任务的紧迫程度就越高，因此在调度时应赋予更高的优先级。对于在DDL前确定无法完成的请求，应直接返回客户端，避免浪费服务器资源。}
 
 \subsubsection{内存优化与前向传播的并行}
 
-一、张量交换与前向传播的并行。张量交换的本质是GPU-CPU通信传输过程，而前向传播的本质是GPU计算过程。二者在传统模式下串行执行。AdaptiveLLM计划在内存优化决策器中设计一个交换线程和一个计算线程，并行完成两项任务，进一步减少张量交换带来的额外开销。
+\begin{itemize}
 
-二、张量重算与前向传播的并行。SARATHI~\cite{SARATHI}框架研发了chunk-prefill技术，实现了prefill阶段与decode阶段的共置运行。由于张量重算的本质是prefill过程，因此若将该技术移植到AdaptiveLLM中，可以实现张量重算与前向传播的并行。
+    \item \textbf{张量交换与前向传播的并行。}张量交换的本质是GPU-CPU通信传输过程，而前向传播的本质是GPU计算过程。二者在传统模式下串行执行。AdaptiveLLM计划在内存优化决策器中设计一个交换线程和一个计算线程，并行完成两项任务，进一步减少张量交换带来的额外开销。
 
-\subsubsection{张量并行与流水线并行} 
+    \item \textbf{张量重算与前向传播的并行。}SARATHI~\cite{SARATHI}框架研发了chunk-prefill技术，实现prefill阶段与decode阶段共置运行。由于张量重算的本质是prefill过程，因此若将该技术移植到AdaptiveLLM中，可以实现张量重算与前向传播的并行。
 
-{\color{red}张量并行（Tensor Parallelism，TP）针对同一节点内的不同GPU实现；流水线并行（Pipeline Parallelism，PP）针对不同节点实现。目前，AdaptiveLLM的优化技术仅应用于单个GPU。实验平台提供了不同GPU间的PCIe通信和不同节点间的无线带宽网络通信，本文将在未来集成TP与PP并行技术。}
+\end{itemize}
 
-{\color{red}另外，AdaptiveLLM提出的内存优化策略和用户请求调度策略在理论上能够扩展至大部分不同配置的服务器平台，将在未来开展进一步测试。}
+\subsubsection{张量并行与流水线并行~\cite{Parallelism}} 
+
+{\color{red}AdaptiveLLM的优化技术仅应用于单个GPU，未来将扩展至张量并行（Tensor Parallelism，TP）与流水线并行（Pipeline Parallelism，PP）模式。在TP场景下，交换与重算开销的计算方式发生变化，模型隐藏维度被均分至不同GPU中。在PP场景下，交换与重算开销的计算方式与单节点完全相同。由于不同流水线阶段的推理时间无法保证完全相同，因此会无法避免地产生流水线气泡~\cite{AdaPipe, GPipe, DAPPLE, PipeDream}。AdaptiveLLM希望使用张量交换和张量重算进行气泡填充。}
+
+\subsubsection{可扩展性}
+
+{\color{red}AdaptiveLLM所提出的内存优化策略与用户请求调度策略能够应用于不同配置的服务器硬件平台。迁移至新平台后，需要收集张量重算开销，训练单步推理时间预测模型，并获取GPU-CPU双向传输带宽信息。整个预处理过程通过数据收集脚本实现，运行时间不超过10min。本文在未来将针对预处理过程进行优化，以实现轻量级代码迁移。}
 
